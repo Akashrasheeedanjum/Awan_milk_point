@@ -1,0 +1,47 @@
+{% extends 'manager/manager_dashbord.html' %}
+
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Add Expences</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="date_field">Select a date:</label>
+        <input type="date" id="date_field" placeholder="selected_date" name="date" required>
+        </div>
+        <div class="form-group">
+            <label for="selectCenter">Select Customer</label>
+            <select class="form-control" id="selectCenter" name="customer_name" required>
+                <option value="">-- Select Customer --</option>
+                {% for item in customers %}
+                <option value="{{item}}">{{item}}</option>
+                {% endfor %} 
+                
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="selectCenter">Select Expence Type</label>
+            <select class="form-control" id="selectCenter" name="expence_type" required>
+                <option value="">-- Select Expence Type --</option>
+                {% for item2 in expences %}
+                <option value="{{item2}}">{{item2}}</option>
+                {% endfor %} 
+                
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="inputAmount">Expence Amount</label>
+            <input type="number" class="form-control" id="inputAmount" name="expence_amount" placeholder="Enter payment amount" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Expences</button>
+    </form>
+</div>
+
+
+
+
+{% endblock content %}

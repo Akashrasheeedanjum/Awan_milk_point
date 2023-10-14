@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+   
+</head>
+<body>
+
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    .invoice-container {
+        width: 80%;
+        margin: 20px auto;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .invoice-header {
+        text-align: center;
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px;
+    }
+
+    .invoice-header h1 {
+        margin: 0;
+    }
+
+    .invoice-details {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .invoice-total {
+        margin-top: 20px;
+        text-align: right;
+    }
+
+    .invoice-footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 14px;
+        color: #888;
+    }
+    table {
+            width: 100%; /* Table takes 100% width of its container */
+            border-collapse: collapse; /* Collapse table borders */
+        }
+        
+        th, td {
+            border: 1px solid #000; /* Add a border to all table cells */
+            padding: 8px; /* Add some padding to cells for spacing */
+            text-align: left; /* Align text to the left */
+        }
+
+        th {
+            background-color: #f2f2f2; /* Background color for table header */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Alternate row background color */
+        }
+</style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <h1>Milk Purchase Invoice</h1>
+        </div>
+        <div class="invoice-details">
+            <p><strong>Supplier:</strong> {{invice.milk_center}}</p>
+            <p><strong>Purchase Date:</strong> {{ invice.purchase_date }}</p>
+            <p><strong>Invoice Number:</strong> INV{{ invice.id }}</p>
+        </div>
+        
+        <table class="table ">
+            <thead>
+              
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td class="">Volume</td>
+                    <td>{{invice.volume}}</td>
+                </tr>
+                <tr>
+                    <td>LR</td>
+                    <td>{{invice.LR}}</td>
+                </tr>
+                <tr>
+                    <td>Fat</td>
+                    <td>{{invice.Fat}}</td>
+                </tr>
+                <tr>
+                    <td>Price per litter</td>
+                    <td>{{ invice.price_per_liter }}</td>
+                </tr>
+                
+                <tr>
+                    <td>SNF</td>
+                    <td>{{ invice.SNF }}</td>
+                </tr>
+                <tr>
+                    <td>Price_on_TS</td>
+                    <td>{{ invice.price_on_TS }}</td>
+                </tr>
+                <tr>
+                    <td>Total Price</td>
+                    <td>{{ invice.total_price }}</td>
+                </tr>
+                
+                
+
+                <!-- Add more rows as needed -->
+            </tbody>
+        </table>
+
+
+        <div class="invoice-footer">
+            <p>Thank you for your purchase!</p>
+        </div>
+    </div>
+</body>
+</html>

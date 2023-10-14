@@ -1,0 +1,24 @@
+{% extends 'manager/manager_dashbord.html' %}
+
+{% block content %}
+
+
+<div class="container mt-5">
+    <h2>Reqister Expence</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="inputAmount">Expence Type</label>
+            <input type="text" class="form-control" id="expence_type" name="expence_name" placeholder="Enter Expence type" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Register Expence</button>
+    </form>
+</div>
+
+
+
+
+{% endblock content %}
+
+
+

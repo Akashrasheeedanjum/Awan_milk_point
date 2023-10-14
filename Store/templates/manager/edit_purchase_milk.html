@@ -1,0 +1,143 @@
+{% extends 'manager/manager_dashbord.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Purchase Details</h2>
+    <form method="post">
+        {% csrf_token %}
+        <!-- <div class="form-group">
+            <label for="selectCenter">Select Center</label>
+            <select class="form-control" id="selectCenter" name="milk_center" value="" required>
+
+                <option value="">-- Select Center --</option>
+                {% for item in milk_center %}
+                <option value="{{item}}">{{item}}</option>
+                {% endfor %}    
+            </select>
+        </div> -->
+        
+        <div class="form-group">
+            <label for="date_field">Select a date:</label>
+        <input type="date" id="date_field" placeholder="selected_date" name="date" value="{{dd}}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="inputVolume">Volume (Liters)</label>
+            <input type="number" class="form-control" id="inputVolume" name="volume" value="{{edit_milk.volume}}" placeholder="Enter Volume" required>
+        </div>
+
+        <div class="form-group">
+            <label for="inputFat">Fat (%)</label>
+            <input type="number" class="form-control" id="inputFat" name="Fat" value="{{edit_milk.Fat}}" placeholder="Enter Fat" step="any" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="inputLR">LR (Liters)</label>
+            <input type="number" class="form-control" id="inputLR" name="LR" value="{{edit_milk.LR}}" placeholder="Enter LR" step="any"  required>
+        </div>
+        
+        <div class="form-group">
+            <label for="inputFat">TS</label>
+            <input type="number" class="form-control" id="inputTS" name="TS" value="13" placeholder="Enter TS" required>
+        </div>
+        <div class="form-group">
+            <label for="inputPrice">Price per Liter</label>
+            <input type="number" class="form-control" id="inputPrice" name="price" value="{{edit_milk.price_per_liter}}" placeholder="Enter Price per Liter" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="inputTotalPrice">Total Price</label>
+            <input type="number" class="form-control" id="inputTotalPrice" name="total_price" value="{{edit_milk.total_price}}" placeholder="Total Price" readonly>
+        </div>
+        <div class="form-group">
+            <label for="inputTotalPrice">SNF</label>
+            <input type="number" class="form-control" id="inputSNF" name="SNF" value="{{edit_milk.SNF}}"  placeholder="Total Price" readonly>
+        </div>
+        <div class="form-group">
+            <label for="inputTotalPrice">Volume on Ts</label>
+            <input type="number" class="form-control" id="inputTsVolume" name="TsVolume" value="{{edit_milk.price_on_TS}}"  placeholder="Total Price" readonly>
+        </div>
+        <button type="submit" class="btn btn-primary">Purchase Milk</button>
+    </form>
+</div>
+
+
+
+
+<script>
+    // Calculate total volume when the page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        calculateTotalVolume();
+    });
+
+    function calculateTotalVolume() {
+        const rows = document.querySelectorAll('tbody tr');
+        let totalVolume = 0;
+
+        rows.forEach(function (row) {
+            const volumeCell = row.querySelector('td:nth-child(5)');
+            const volumeText = volumeCell.textContent.trim();
+            const volume = parseFloat(volumeText.split(' ')[0]);
+            
+            if (!isNaN(volume)) {
+                totalVolume += volume;
+            }
+        });
+
+        document.getElementById('totalVolume').textContent = totalVolume.toFixed(2);
+    }
+</script>
+
+<script>
+    // Calculate and display total price when price, volume, LR, or Fat fields change
+    const priceField = document.querySelector('#inputPrice');
+    const volumeField = document.querySelector('#inputVolume');
+    const lrField = document.querySelector('#inputLR');
+    const fatField = document.querySelector('#inputFat');
+    const tsField = document.querySelector('#inputTS');
+    const snfField = document.querySelector('#inputSNF');
+    const totalPriceField = document.querySelector('#inputTotalPrice');
+    const TsVolumeField = document.querySelector('#inputTsVolume');
+
+    const calculateTotalPrice = () => {
+        const price = parseFloat(priceField.value);
+        const volume = parseFloat(volumeField.value);
+        const lr = parseFloat(lrField.value);
+        const fat = parseFloat(fatField.value);
+        const ts = parseFloat(tsField.value);
+
+        if (!isNaN(price) && !isNaN(volume) && !isNaN(lr) && !isNaN(fat) && !isNaN(ts)) {
+            // Calculate SNF
+            const snf = (0.25 * lr) + (0.22 * fat) + 0.72;
+            console.log(snf)
+            snfField.value = snf.toFixed(2);
+            // Calculate total price
+            const T=[.22*fat+.25*lr+0.72+fat]
+            const v=(T*volume)/ts
+            TsVolumeField.value = v.toFixed(2);
+            const totalPrice = v * price;
+            totalPriceField.value = totalPrice.toFixed(2);
+        } else {
+            snfField.value = '';
+            totalPriceField.value = ''; // Clear total price if any input is invalid
+            TsVolumeField.value = '';
+        }
+    };
+
+    // Add event listeners to trigger calculation on input change
+    priceField.addEventListener('input', calculateTotalPrice);
+    volumeField.addEventListener('input', calculateTotalPrice);
+    lrField.addEventListener('input', calculateTotalPrice);
+    fatField.addEventListener('input', calculateTotalPrice);
+    tsField.addEventListener('input', calculateTotalPrice);
+</script>
+
+
+
+
+{% endblock content %}
+
+
+
+

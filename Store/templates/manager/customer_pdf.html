@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+   
+</head>
+<body>
+
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        font-size: 8px;
+    }
+    
+    .invoice-container {
+        width: 80%;
+        margin: 20px auto;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .invoice-header {
+        text-align: center;
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px;
+    }
+
+    .invoice-header h1 {
+        margin: 0;
+    }
+
+    .invoice-details {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .invoice-total {
+        margin-top: 20px;
+        text-align: right;
+    }
+
+    .invoice-footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 14px;
+        color: #888;
+    }
+    table {
+            width: 100%; /* Table takes 100% width of its container */
+            border-collapse: collapse; /* Collapse table borders */
+        }
+        
+        th, td {
+            border: 1px solid #000; /* Add a border to all table cells */
+            padding: 2px; /* Add some padding to cells for spacing */
+            text-align: left; /* Align text to the left */
+        }
+
+        th {
+            background-color: #f2f2f2; /* Background color for table header */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Alternate row background color */
+        }
+</style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <h1>{{customer.name}} Invoice</h1>
+        </div>
+        <div class="invoice-details">
+            <p><strong>Customer:</strong> {{customer.name}}</p>
+            <p><strong>Purchase Date:</strong>From {{selecting_date}} To {{ ending_date }}</p>
+            <p><strong>Invoice Number:</strong> INV{{ customer.id }}</p>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-striped ">
+                <thead>
+                    <tr>
+                        <th>Date and Time</th>
+                        <th>Description</th>
+                        <th>Amount/Volume</th>
+                        <th>Price</th>
+                        <th>Balance</th>
+                        {% if request.user.is_staff %}
+                        <th>Action</th>
+                        {% else %}
+                      
+                      {% endif %} <!-- Add the Balance column -->
+                        <!-- Add other columns as needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in combined_data %}
+                    <tr>
+                        <td>
+                            {% if entry.source == 'MilkPurchase' %}
+                                {{ entry.purchase_date }}
+                            {% elif entry.source == 'Expences' %}
+                                {{ entry.date }}
+                            {% else %}
+                                {{ entry.payment_date }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.source == 'MilkPurchase' %}
+                                Milk Sale
+                            {% elif entry.source == 'Expences' %}
+                                {{ entry.expence_type }}
+                            {% else %}
+                                Payment
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.source == 'MilkPurchase' %}
+                                {{ entry.volume }} liters
+                            {% elif entry.source == 'Expences' %}
+                                Rs {{ entry.expence_amount }}
+                            {% else %}
+                                Rs {{ entry.amount_received }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.source == 'MilkPurchase' %}
+                                {{ entry.total_price }} liters
+                            {% else %}
+                                
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ entry.balance }}
+                        </td>
+    
+                        {% if request.user.is_staff %}
+                        <td>
+    
+                            {% if entry.source == 'MilkPurchase' %}
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteSalePayment' entry.id pid %}">
+                                  <i class="fas fa-trash fa-sm"></i>
+                                </a>
+                              </div>
+                            {% elif entry.source == 'Expences' %}
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteExpence' entry.id pid %}">
+                                  <i class="fas fa-trash fa-sm"></i>
+                                </a>
+                              </div>
+                            {% else %}
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteCustomerPayment' entry.id pid %}">
+                                  <i class="fas fa-trash fa-sm"></i>
+                                </a>
+                              </div>
+                            {% endif %}
+                        </td>
+                        {% else %}
+                      
+                      {% endif %}
+                        <!-- Add other columns as needed -->
+                    </tr>
+                {% endfor %}
+                    
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="invoice-footer">
+            <p>Thank you {{customer.name}}</p>
+        </div>
+    </div>
+</body>
+</html>

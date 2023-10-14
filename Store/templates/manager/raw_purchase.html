@@ -1,0 +1,167 @@
+{% extends 'manager/manager_dashbord.html' %}
+
+{% block content %}
+
+<style>
+    
+</style>
+
+<div class="container m-0,p-0">
+    <h2>Purchase Details</h2>
+    <form method="post" class="m-0 p-0">
+        {% csrf_token %}
+        <div class="form-group m-0 p-0">
+            <label for="selectCenter">Select Center</label>
+            <select class="form-control" id="selectCenter" name="milk_center" required>
+
+                <option value="">-- Select Center --</option>
+                {% for item in milk_center %}
+                <option value="{{item}}">{{item}}</option>
+                {% endfor %}    
+            </select>
+        </div>
+        
+        <div class="form-group m-0 p-0">
+            <label for="date_field">Select a date:</label>
+        <input type="date" id="date_field" placeholder="selected_date" name="date" required>
+        </div>
+        
+        <div class="form-group m-0 p-0">
+            <label for="inputVolume">Volume (Liters)</label>
+            <input type="number" class="form-control" id="inputVolume" name="volume" placeholder="Enter Volume" required>
+        </div>
+        <div class="form-group m-0 p-0">
+            <label for="inputPrice">Price per Liter</label>
+            <input type="number" class="form-control" id="inputPrice" name="price" placeholder="Enter Price per Liter" required>
+        </div>
+        
+        <div class="form-group m-0 p-0">
+            <label for="inputTotalPrice">Total Price</label>
+            <input type="number" class="form-control" id="inputTotalPrice" name="total_price" placeholder="Total Price" readonly>
+        </div>
+        
+        <button type="submit" name="submit1" class="btn btn-primary">Purchase Milk</button>
+    </form>
+</div>
+
+
+{% comment %} Table  {% endcomment %}
+
+<div class="container mt-1">
+    <div class="d-flex justify-content-between align-items-center">
+    <h2>Purchase Table</h2>
+    <form method="post" id="my-form" class="form-inline">
+        {% csrf_token %}
+        <div class="form-group mx-2">
+            <label for="date_field" class="mr-2">Select a date:</label>
+            <input type="date" id="date_field" class="form-control" name="date" required>
+        </div>
+        <button type="submit" name="submit2" class="btn btn-primary">Search</button>
+    </form>
+</div>
+{{ select_date }}
+
+
+    
+    
+    <div class="table-responsive m-0 p-0">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Center Name</th>
+                    <th>LR</th>
+                    <th>Fat</th>
+                    <th>SNF</th>
+                    <th>Volume</th>
+                    <th>Volume on TS</th>
+                    <th>Total Price</th>
+                    <th>Print Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in purchase %}
+                <tr>
+                    <td>{{i.milk_center}}</td>
+                    <td>{{i.LR}}</td>
+                    <td>{{i.Fat}}</td>
+                    <td>{{i.SNF}}</td>
+                    <td>{{i.volume}}</td>
+                    <td>RS {{i.price_on_TS}}</td>
+                    <td>{{i.total_price}}</td>
+                    <td><a class="btn btn-danger"href="{% url 'purchase_invice' i.id %}">
+                        <i class="fas fa-print"></i>
+                      </a></td>
+                    
+                </tr>
+                {% endfor %}
+                <!-- Add more rows with data as needed -->
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-3">
+        <strong>Total Volume:</strong> <span id="totalVolume">0</span> liters
+    </div>
+</div>
+
+<script>
+    // Calculate total volume when the page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        calculateTotalVolume();
+    });
+
+    function calculateTotalVolume() {
+        const rows = document.querySelectorAll('tbody tr');
+        let totalVolume = 0;
+
+        rows.forEach(function (row) {
+            const volumeCell = row.querySelector('td:nth-child(5)');
+            const volumeText = volumeCell.textContent.trim();
+            const volume = parseFloat(volumeText.split(' ')[0]);
+            
+            if (!isNaN(volume)) {
+                totalVolume += volume;
+            }
+        });
+
+        document.getElementById('totalVolume').textContent = totalVolume.toFixed(2);
+    }
+</script>
+
+<script>
+    // Calculate and display total price when price, volume, LR, or Fat fields change
+    const priceField = document.querySelector('#inputPrice');
+    const volumeField = document.querySelector('#inputVolume');
+    const totalPriceField = document.querySelector('#inputTotalPrice');
+    
+
+    const calculateTotalPrice = () => {
+        const price = parseFloat(priceField.value);
+        const volume = parseFloat(volumeField.value);
+        
+
+        if (!isNaN(price) && !isNaN(volume)) {
+            // Calculate SNF
+            
+            const totalPrice = volume * price;
+            totalPriceField.value = totalPrice.toFixed(2);
+        } else {
+            
+            totalPriceField.value = ''; // Clear total price if any input is invalid
+            
+        }
+    };
+
+    // Add event listeners to trigger calculation on input change
+    priceField.addEventListener('input', calculateTotalPrice);
+    volumeField.addEventListener('input', calculateTotalPrice);
+    
+</script>
+
+
+
+
+{% endblock content %}
+
+
+
+

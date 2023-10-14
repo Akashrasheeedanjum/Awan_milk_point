@@ -1,0 +1,175 @@
+{% extends 'manager/manager_dashbord.html' %}
+
+
+{% block content %}
+<style>
+    /* Custom styling for the dashboard */
+    body {
+        background-color: #f4f4f4;
+        font-family: Arial, sans-serif;
+    }
+    .dashboard {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 2px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 5px;
+    }
+    .data-card {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .data-card h3 {
+        font-weight: bold;
+        font-size: 15px;
+    }
+    .center-details, .customer-details {
+        margin-top: 5px;
+    }
+    .btn-view-details {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        width: 100%; /* Ensure the button width is 100% on mobile */
+    }
+</style>
+<div class="container-fluid mt-1">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="dashboard">
+                <div class="header">
+                    <h4>Milk Store</h4>
+                </div>
+                <div class="data-card">
+                    <h3>Total Milk</h3>
+                    <p>{{storage}} liters</p>
+                </div>
+                <!-- <div class="data-card mt-2">
+                    <h3>Total Amount</h3>
+                        <p>Rs 4,35,000</p>
+                </div> -->
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="dashboard">
+            <div class="row">
+
+                <div class="col-md-12">
+
+                    <form method="post" id="my-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="date_field">Select a date:</label>
+                            <input type="date" id="date_field" placeholder="selected_date" name="date" required>
+                        </div>
+                    </form>
+                    {{today}}
+                </div>
+
+                <div class="col-md-6">
+                    <div class="dashboard">
+                        <div class="header">
+                            <h4>Purchase List</h4>
+                        </div>
+                        <div class="data-card">
+                            <h3>Total Milk</h3>
+                            <p>{{total_volume}} liters</p>
+                        </div>
+                        <div class="data-card mt-2">
+                            <h3>Total Amount</h3>
+                                <p>Rs {{total_price}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard">
+                        <div class="header">
+                            <h4>Sale List</h4>
+                        </div>
+                        <div class="data-card">
+                            <h3>Total Milk</h3>
+                            <p>{{sale_volume}} liters</p>
+                        </div>
+                        <div class="data-card mt-2">
+                            <h3>Total Amount</h3>
+                                <p>Rs {{sale_price}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 mt-2">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="dashboard">
+                        <div class="header">
+                            <h4>Center Details</h4>
+                        </div>
+                        <div class="center-details">
+                            <h5>Total Supplier:</h5>
+                            <p>{{centers}}</p>
+                        </div>
+
+                        <a class="btn btn-view-details" href="/center_details/">View Details</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard">
+                        <div class="header">
+                            <h4>Customer Details</h4>
+                        </div>
+                        <div class="customer-details">
+                            <h5>Total Customer:</h5>
+                            <p>{{customers}}</p>
+                        </div>
+
+                        <a class="btn btn-view-details" href="/customer_details/">View Details</a>
+                    </div>
+
+                </div>
+                <!-- <div class="col-md-3">
+                    <div class="dashboard">
+                        <div class="header">
+                            <h4>Employee Details</h4>
+                        </div>
+                        <div class="customer-details">
+                            <h5>Total Employee:</h5>
+                            <p>{{employee}}</p>
+                        </div>
+
+                        <a class="btn btn-view-details" href="/customer_details/">View Details</a>
+                    </div>
+
+                </div> -->
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dateInput = document.getElementById('date_field');
+        const form = document.getElementById('my-form');
+
+        dateInput.addEventListener('change', function () {
+            form.submit();
+        });
+    });
+</script>
+
+{% endblock content %}
+
+
+
+

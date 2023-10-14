@@ -1,0 +1,122 @@
+{% extends 'manager/manager_dashbord.html' %}
+
+
+{% block content %}
+<style>
+    /* Custom styling for the dashboard */
+    body {
+        background-color: #f4f4f4;
+        font-family: Arial, sans-serif;
+    }
+    .dashboard {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .data-card {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .data-card h3 {
+        font-weight: bold;
+        font-size: 24px;
+    }
+    .center-details, .customer-details {
+        margin-top: 20px;
+    }
+    .btn-view-details {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        width: 100%; /* Ensure the button width is 100% on mobile */
+    }
+</style>
+<div class="container-fluid mt-5">
+    <div class="row">
+        
+        <div class="col-md-10">
+            <div class="dashboard">
+            <div class="row">
+                
+                <div class="col-md-12">
+                    
+                    <form method="post" id="my-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="date_field">Select a date:</label>
+                            <input type="date" id="date_field" placeholder="selected_date" name="date" required>
+                        </div>
+                    </form>
+                    {{selected_date}}
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="dashboard">
+                        <div class="header">
+                            <h1>PNL</h1>
+                        </div>
+                        <div class="data-card">
+                            <h5>Purchase Milk : {{total_volume_purchase}} Litter</h5>
+                            <h5>Purchase Price : Rs {{total_price_purchase}}</h5>
+                            
+                            <h5>Sale Milk : {{total_volume_sale}} Litter</h5>
+                            <h5>Sale Price : Rs {{total_price_sale}}</h5>
+                        </div>
+                        <div class="data-card mt-2">
+                            <h4>Remaing Milk : {{remaining_milk}} </h4>
+                            <h4>Average Price  : Rs {{average_price}} </h4>
+                            <h4>Astimate Price : Rs {{estimated_price}} </h4>
+                                
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard">
+                        <div class="header">
+                            <h1>Calculate</h1>
+                        </div>
+                        <div class="data-card">
+                            <h5>Total Purchase Price : Rs {{total_purchase_price}}</h5>
+                            <h5>Total Expence : Rs {{total_expense}}</h5>
+                            <h5>Total Sale Price : Rs {{total_sale_price}}</h5>
+                            
+                        </div>
+                        <div class="data-card mt-2">
+                            <h3>Profit : {{profit}}</h3>
+                                
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dateInput = document.getElementById('date_field');
+        const form = document.getElementById('my-form');
+
+        dateInput.addEventListener('change', function () {
+            form.submit();
+        });
+    });
+</script>
+
+{% endblock content %}
+
+
+
+

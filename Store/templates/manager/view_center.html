@@ -1,0 +1,158 @@
+{% extends 'manager/manager_dashbord.html' %}
+
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+        
+    }
+    
+
+   
+</style>
+
+
+
+<div class="container bg-white mt-3 " style="font-size: 10px;">
+    
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Purchase Table</h2>
+        <form method="post" id="my-form" class="form-inline">
+            {% csrf_token %}
+            <div class="form-group mx-2">
+                <label for="date_field_from" class="mr-2">From:</label>
+                <input type="date" id="date_field_from" class="form-control" name="from" required>
+            </div>
+            <div class="form-group mx-2">
+                <label for="date_field_to" class="mr-2">To:</label>
+                <input type="date" id="date_field_to" class="form-control" name="to" required>
+            </div>
+            <button type="submit" name="submit2" class="btn btn-primary">Search</button>
+        </form>
+
+
+        <a class="btn btn-primary" href="{% url 'center_invoice' customer.id %}">
+            <i class="fas fa-print fa-sm"></i>
+        </a>
+
+
+
+        
+    </div>
+    <p class="h6">Center Name: <span class="h5">{{customer.name}}</span></p>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm p-0 m-0">
+            <thead>
+                <tr>
+                    <th>Date and Time</th>
+                    <th>Description</th>
+                    <th>FAT---LR</th>
+
+                    <th>Payment BY</th>
+                    <th>Amount/Volume</th>
+                    <th>Price</th>
+                    <th>Balance</th>
+                    {% if request.user.is_staff %}
+                    <th>Action</th>
+                    {% else %}
+                  
+                  {% endif %}  <!-- Add the Balance column -->
+                    <!-- Add other columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in combined_data %}
+                <tr>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            {{ entry.purchase_date }}
+                        {% else %}
+                            {{ entry.payment_date }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            Milk Purchase
+                        {% else %}
+                            Payment
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            {{entry.Fat}}---{{entry.LR}}
+                        {% else %}
+                            
+                        {% endif %}
+                    </td>
+                    <!-- changing -->
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            {{ entry.notes}}
+                        {% else %}
+                            {{ entry.notes }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            {{ entry.volume }} liters
+                        {% else %}
+                            Rs {{ entry.amount }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                           Rs {{ entry.total_price }} 
+                        {% else %}
+                            
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ entry.balance }}
+                    </td>
+                    {% if request.user.is_staff %}
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                        <div class="d-flex justify-content-center">
+                            <!-- <a class="btn btn-primary mr-2" href="{% url 'editCenterMilk' entry.id pid %}">
+                                <i class="fas fa-pencil"></i>
+                              </a> -->
+                            <a class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteCenterMilk' entry.id pid %}">
+                              <i class="fas fa-trash fa-sm"></i>
+                            </a>
+                            
+                          </div>
+                        {% else %}
+                        <div class="d-flex justify-content-center">
+                            <!-- <a class="btn btn-primary mr-2" href="{% url 'deleteCenterMilk' entry.id pid %}">
+                                <i class="fas fa-pencil"></i>
+                              </a> -->
+                            <a class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteCenterPayment' entry.id pid %}">
+                              <i class="fas fa-trash fa-xm"></i>
+                            </a>
+                          </div>
+                        {% endif %}
+                    </td>
+                    {% else %}
+                  
+                  {% endif %}
+
+                    
+                    <!-- Add other columns as needed -->
+                </tr>
+            {% endfor %}
+                
+                <!-- Add more rows as needed -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+
+

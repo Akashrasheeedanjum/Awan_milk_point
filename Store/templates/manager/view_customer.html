@@ -1,0 +1,153 @@
+{% extends 'manager/manager_dashbord.html' %}
+
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+    }
+
+   
+</style>
+
+
+
+<div class="container bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+        <h2>Sale Details</h2>
+        <form method="post" id="my-form" class="form-inline">
+            {% csrf_token %}
+            <div class="form-group mx-2">
+                <label for="date_field_from" class="mr-2">From:</label>
+                <input type="date" id="date_field_from" class="form-control" name="from" required>
+            </div>
+            <div class="form-group mx-2">
+                <label for="date_field_to" class="mr-2">To:</label>
+                <input type="date" id="date_field_to" class="form-control" name="to" required>
+            </div>
+            <button type="submit" name="submit2" class="btn btn-primary">Search</button>
+        </form>
+
+
+        <a class="btn btn-primary" href="{% url 'customer_invoice' customer.id %}">
+            <i class="fas fa-print fa-sm"></i>
+        </a>
+
+
+
+        
+    </div>
+    <p class="h6">Customer Name: <span class="h5">{{customer.name}}</span></p>
+    
+    <div class="table-responsive table-sm">
+        <table class="table table-striped m-0 p-0 ">
+            <thead>
+                <tr>
+                    <th>Date and Time</th>
+                    <th>Description</th>
+                    <th>FAT---LR</th>
+
+                    <th>Amount/Volume</th>
+                    <th>Price</th>
+                    <th>Balance</th>
+                    {% if request.user.is_staff %}
+                    <th>Action</th>
+                    {% else %}
+                  
+                  {% endif %} <!-- Add the Balance column -->
+                    <!-- Add other columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in combined_data %}
+                <tr>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            {{ entry.purchase_date }}
+                        {% elif entry.source == 'Expences' %}
+                            {{ entry.date }}
+                        {% else %}
+                            {{ entry.payment_date }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            Milk Sale
+                        {% elif entry.source == 'Expences' %}
+                            {{ entry.expense_type }}
+                        {% else %}
+                            Payment
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            {{entry.Fat}}---{{entry.LR}}
+                        {% elif entry.source == 'Expences' %}
+                            <!-- {{ entry.expense_type }} -->
+                        {% else %}
+                            <!-- Payment -->
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            {{ entry.volume }} liters
+                        {% elif entry.source == 'Expences' %}
+                            Rs {{ entry.expense_amount }}
+                        {% else %}
+                            Rs {{ entry.amount_received }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.source == 'MilkPurchase' %}
+                            {{ entry.total_price }} liters
+                        {% else %}
+                            
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ entry.balance }}
+                    </td>
+
+                    {% if request.user.is_staff %}
+                    <td>
+
+                        {% if entry.source == 'MilkPurchase' %}
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteSalePayment' entry.id pid %}">
+                              <i class="fas fa-trash fa-sm"></i>
+                            </a>
+                          </div>
+                        {% elif entry.source == 'Expences' %}
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteExpence' entry.id pid %}">
+                              <i class="fas fa-trash fa-sm"></i>
+                            </a>
+                          </div>
+                        {% else %}
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteCustomerPayment' entry.id pid %}">
+                              <i class="fas fa-trash fa-sm"></i>
+                            </a>
+                          </div>
+                        {% endif %}
+                    </td>
+                    {% else %}
+                  
+                  {% endif %}
+                    <!-- Add other columns as needed -->
+                </tr>
+            {% endfor %}
+                
+                <!-- Add more rows as needed -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}
+
+
+

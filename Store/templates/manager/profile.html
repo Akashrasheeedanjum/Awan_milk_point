@@ -1,0 +1,45 @@
+{% extends 'manager/manager_dashbord.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h2>User Profile</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" class="img-fluid" alt="Profile Picture">
+                            {% comment %} {% else %}
+                                <img src="{% static 'media/profile_pictures//image.jpg' %}" class="img-fluid" alt="Default Profile Picture"> {% endcomment %}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-group">
+                                <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+                                <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                                <li class="list-group-item"><strong>User Type:</strong> {{ user.get_user_type_display }}</li>
+                                <li class="list-group-item"><strong>Phone Number:</strong> {{ user.phone_number }}</li>
+                                <li class="list-group-item"><strong>Address:</strong> {{ user.address }}</li>
+                                <li class="list-group-item"><strong>Date of Birth:</strong> {{ user.date_of_birth }}</li>
+                                <li class="list-group-item"><strong>Branch:</strong> {{ user.branch }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}
+
+
+
+
