@@ -45,24 +45,12 @@
                 </li>
                 <!-- <li class="nav-item">
                     <a class="nav-link" href="/add_center/">Add Center</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/add_customer/">Add Customter</a>
                 </li> -->
-                
-
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Vendors
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    
-                    <li><a class="dropdown-item" href="{% url 'add_center'%}">Add Center</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="{% url 'add_customer'%}">Add Customer</a></li>
-                    <!-- <li><a class="dropdown-item" href="{% url 'add_vendor'%}">Add Employee</a></li> -->
-                  </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'add_vendor'%}">Add Employee</a>
                 </li>
+                
+                
                 <!-- <li class="nav-item">
                     <a class="nav-link" href="/purchase_milk/">Purchase</a>
                 </li> -->
@@ -102,7 +90,7 @@
                       <li><hr class="dropdown-divider"></li>
                       <li><a class="dropdown-item" href="{% url 'add_customer_ex'%}">Customer Expence</a></li>
                       <!-- <li><a class="dropdown-item" href="{% url 'add_customer_ex'%}">Shop Expence</a></li> -->
-                      <li><a class="dropdown-item" href="#">Supplier Expence</a></li>
+                      <li><a class="dropdown-item" href="{% url 'add_center_ex'%}">Supplier Expence</a></li>
                     </ul>
                   </li>
 
@@ -117,7 +105,7 @@
                       <li><a class="dropdown-item" href="/recive_payment/">Recive Payment</a></li>
                     </ul>
                   </li>
-                  {% if request.user.is_staff %}
+                  {% if request.user.user_type == 'admin'%}
                   <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       PNL

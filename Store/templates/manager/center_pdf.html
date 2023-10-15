@@ -80,36 +80,48 @@
         <div class="invoice-header">
             <h1>Supplier Invoice</h1>
         </div>
-        <div class="invoice-details">
+        <div class="invoice-details p-0">
             <p><strong>Customer:</strong> {{customer.name}}</p>
             <p><strong>Purchase Date:</strong>From {{selecting_date}} To {{ ending_date }}</p>
-            <p><strong>Invoice Number:</strong> INV{{ customer.id }}</p>
+            <!-- <p><strong>Invoice Number:</strong> INV{{ customer.id }}</p> -->
+            <p><strong>Opening balance:  </strong>  {{opening_balance }}</p>
         </div>
         
         <div class="table-responsive">
             <table class="table table-striped table-sm p-0 m-0">
                 <thead>
+                    
                     <tr>
                         <th>Date and Time</th>
                         <th>Description</th>
+                        <th>FAT---LR</th>
                         <th>Payment BY</th>
                         <th>Amount/Volume</th>
                         <th>Price</th>
                         <th>Balance</th>
-                        {% if request.user.is_staff %}
-                        <th>Action</th>
-                        {% else %}
-                      
-                      {% endif %}  <!-- Add the Balance column -->
+                         <!-- Add the Balance column -->
                         <!-- Add other columns as needed -->
                     </tr>
                 </thead>
+                
                 <tbody>
+                    <!-- <tr>    
+                        <td></td>
+                        <td>Opening Balance</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{opening_balance}}</td>
+                        <td></td>
+                        <td>{{opening_balance}}</td>
+                        <td></td>
+                    </tr> -->
                     {% for entry in combined_data %}
                     <tr>
                         <td>
                             {% if entry.source == 'MilkPurchase' %}
                                 {{ entry.purchase_date }}
+                            {% elif entry.source == 'Expences' %}
+                                {{ entry.date }}
                             {% else %}
                                 {{ entry.payment_date }}
                             {% endif %}
@@ -117,14 +129,25 @@
                         <td>
                             {% if entry.source == 'MilkPurchase' %}
                                 Milk Purchase
+                            {% elif entry.source == 'Expences' %}
+                                {{ entry.expense_type }}
                             {% else %}
                                 Payment
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.source == 'MilkPurchase' %}
+                                {{entry.Fat}}---{{entry.LR}}
+                            {% elif entry.source == 'Expences' %}
+                            {% else %}
+                                
                             {% endif %}
                         </td>
                         <!-- changing -->
                         <td>
                             {% if entry.source == 'MilkPurchase' %}
                                 {{ entry.notes}}
+    
                             {% else %}
                                 {{ entry.notes }}
                             {% endif %}
@@ -132,7 +155,10 @@
                         <td>
                             {% if entry.source == 'MilkPurchase' %}
                                 {{ entry.volume }} liters
+                            {% elif entry.source == 'Expences' %}
+                                Rs {{ entry.expense_amount }}
                             {% else %}
+    
                                 Rs {{ entry.amount }}
                             {% endif %}
                         </td>
@@ -153,8 +179,8 @@
                                 <!-- <a class="btn btn-primary mr-2" href="{% url 'editCenterMilk' entry.id pid %}">
                                     <i class="fas fa-pencil"></i>
                                   </a> -->
-                                <a class="btn btn-danger" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteCenterMilk' entry.id pid %}">
-                                  <i class="fas fa-trash"></i>
+                                <a class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteCenterMilk' entry.id pid %}">
+                                  <i class="fas fa-trash fa-sm"></i>
                                 </a>
                                 
                               </div>
@@ -163,8 +189,8 @@
                                 <!-- <a class="btn btn-primary mr-2" href="{% url 'deleteCenterMilk' entry.id pid %}">
                                     <i class="fas fa-pencil"></i>
                                   </a> -->
-                                <a class="btn btn-danger" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteCenterPayment' entry.id pid %}">
-                                  <i class="fas fa-trash"></i>
+                                <a class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to Delete ?')" href="{% url 'deleteCenterPayment' entry.id pid %}">
+                                  <i class="fas fa-trash fa-xm"></i>
                                 </a>
                               </div>
                             {% endif %}

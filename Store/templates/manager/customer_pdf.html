@@ -83,7 +83,8 @@
         <div class="invoice-details">
             <p><strong>Customer:</strong> {{customer.name}}</p>
             <p><strong>Purchase Date:</strong>From {{selecting_date}} To {{ ending_date }}</p>
-            <p><strong>Invoice Number:</strong> INV{{ customer.id }}</p>
+            <!-- <p><strong>Invoice Number:</strong> INV{{ customer.id }}</p> -->
+            <p><strong>Opening balance:  </strong>  {{opening_balance }}</p>
         </div>
         
         <div class="table-responsive">
@@ -104,6 +105,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    
                     {% for entry in combined_data %}
                     <tr>
                         <td>

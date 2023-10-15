@@ -33,6 +33,36 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+
+
+class Employee(models.Model):
+    USER_TYPE_CHOICES = [
+        ('supplier', 'Supplier'),
+        ('employee', 'Employee'),
+        ('customer', 'Customer'),
+        
+    ]
+
+    Employee_type = models.CharField(
+        max_length=10,
+        choices=USER_TYPE_CHOICES,
+        default='customer',
+    )
+
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    branch = models.ForeignKey(Branch, on_delete=models.SET_DEFAULT, default=1)
+    name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    registration_date = models.DateTimeField(auto_now_add=True)
+    opening_balance=models.DecimalField(max_digits=10, decimal_places=2,default=0.00)
+    closing_balance=models.DecimalField(max_digits=10, decimal_places=2,default=0.00)
+
+
+    def __str__(self):
+        return self.name
+
 
 class MilkCenter(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.SET_DEFAULT, default=1)
@@ -69,7 +99,7 @@ class Customer(models.Model):
 
 class MilkPurchase(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    milk_center = models.ForeignKey(MilkCenter, on_delete=models.CASCADE)
+    milk_center = models.ForeignKey(Employee, on_delete=models.CASCADE)
     purchase_date = models.DateField()
     volume = models.DecimalField(max_digits=10, decimal_places=2)
     price_per_liter = models.DecimalField(max_digits=10, decimal_places=2)
@@ -85,7 +115,7 @@ class MilkPurchase(models.Model):
 
 class MilkSale(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Employee, on_delete=models.CASCADE)
     purchase_date = models.DateField()
     volume = models.DecimalField(max_digits=10, decimal_places=2)
     price_per_liter = models.DecimalField(max_digits=10, decimal_places=2)
@@ -101,7 +131,7 @@ class MilkSale(models.Model):
 
 class MakePayment(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    milk_center = models.ForeignKey(MilkCenter, on_delete=models.CASCADE)
+    milk_center = models.ForeignKey(Employee, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateField()
     payment_method = models.CharField(max_length=50)
@@ -114,7 +144,7 @@ class MakePayment(models.Model):
 
 class ReceivedPayment(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Employee, on_delete=models.CASCADE)
     amount_received = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateField()
     payment_method = models.CharField(max_length=50)
@@ -143,7 +173,7 @@ class Expence(models.Model):  # Changed "Expence" to "Expense"
 
 class CustomerExpence(models.Model):  # Changed "CustomerExpence" to "CustomerExpense"
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField()
     expense_type = models.TextField(blank=True, null=True)
     expense_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
@@ -151,30 +181,3 @@ class CustomerExpence(models.Model):  # Changed "CustomerExpence" to "CustomerEx
     def __str__(self):
         return self.customer.name
 
-
-class Employee(models.Model):
-    USER_TYPE_CHOICES = [
-        ('supplier', 'Supplier'),
-        ('employee', 'Employee'),
-        ('customer', 'Customer'),
-        
-    ]
-
-    Employee_type = models.CharField(
-        max_length=10,
-        choices=USER_TYPE_CHOICES,
-        default='customer',
-    )
-
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
-    branch = models.ForeignKey(Branch, on_delete=models.SET_DEFAULT, default=1)
-    name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
-    registration_date = models.DateTimeField(auto_now_add=True)
-    opening_balance=models.DecimalField(max_digits=10, decimal_places=2,default=0.00)
-    closing_balance=models.DecimalField(max_digits=10, decimal_places=2,default=0.00)
-
-
-    def __str__(self):
-        return self.name

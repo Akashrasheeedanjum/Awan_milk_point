@@ -42,6 +42,7 @@ urlpatterns = [
     path('view_customer/<int:pid>/', views.view_customer, name='view_customer'),
     path('register_customer_ex', views.register_customer_ex, name='register_customer_ex'),
     path('add_customer_ex', views.add_customer_ex, name='add_customer_ex'),
+    path('add_center_ex', views.add_center_ex, name='add_center_ex'),
     path('PNL', views.PNL, name='PNL'),
     path('BetweenPNL', views.BetweenPNL, name='BetweenPNL'),
 ]

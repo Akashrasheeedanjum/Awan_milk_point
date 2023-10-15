@@ -177,7 +177,7 @@ def deleteCenter(request,id):
     print('rining')
     print(id)
 
-    inf = MilkCenter.objects.get(id=id)
+    inf = Employee.objects.get(id=id)
     inf.delete()
     return redirect('center_details')
 
@@ -193,7 +193,7 @@ def deleteCustomer(request,id):
     print('rining')
     print(id)
 
-    inf = Customer.objects.get(id=id)
+    inf = Employee.objects.get(id=id)
     inf.delete()
     return redirect('customer_details')
 
@@ -285,11 +285,12 @@ def add_vendor(request):
             name = request.POST.get('name', '')
             phone = request.POST.get('phone', '')
             address = request.POST.get('address', '')
+            balance = request.POST.get('balance', '')
             vendor_type = request.POST['vendor_type']
             print(vendor_type)
 
             # Create and save a new MilkCenter instance
-            Vendor = Employee(name=name, phone_number=phone, address=address, Employee_type=vendor_type, branch=branch)
+            Vendor = Employee(name=name, phone_number=phone, address=address,opening_balance=balance, Employee_type=vendor_type, branch=branch)
             Vendor.save()
             messages.success(request, (vendor_type +" saved successfully"))
             return redirect('/manager_dashbord/')  # Redirect to the manager dashboard or the appropriate URL
@@ -310,10 +311,10 @@ def add_center(request):
             name = request.POST.get('name', '')
             phone = request.POST.get('phone', '')
             address = request.POST.get('address', '')
-            price = request.POST.get('price', '')
+            opening_balance = request.POST.get('price', '')
 
             # Create and save a new MilkCenter instance
-            milk_center = MilkCenter(name=name, phone_number=phone, address=address, price_of_milk=price, branch=branch)
+            milk_center = Employee(name=name, phone_number=phone, address=address, opening_balance=opening_balance, branch=branch)
             milk_center.save()
             print("Milk Center saved successfully")
             return redirect('/manager_dashbord/')  # Redirect to the manager dashboard or the appropriate URL
@@ -329,10 +330,12 @@ def add_customer(request):
         name = request.POST.get('name', '')
         phone = request.POST.get('phone', '')
         address = request.POST.get('address', '')
+        opening_balance = 0
+
 
         try:
             # Create and save a new Customer instance
-            customer = Customer(name=name, phone_number=phone, address=address, branch=branch)
+            customer = Employee(name=name, phone_number=phone, address=address,opening_balance=opening_balance, branch=branch)
             customer.save()
             print("Customer saved successfully")
             return redirect('/manager_dashbord/')  # Redirect to the manager dashboard or the appropriate URL
@@ -347,12 +350,13 @@ def raw_purchase(request):
     from datetime import date
     today = date.today()
     branch=request.user.branch
-    centers = MilkCenter.objects.filter(branch=branch)
+    centers = Employee.objects.filter(branch=branch,Employee_type='supplier')
     purchase=MilkPurchase.objects.filter(purchase_date=today,branch=branch)
 
     if request.method == 'POST':
         if 'submit1' in request.POST:
             center_name = request.POST.get('milk_center', '')
+            print(center_name)
             date = request.POST.get('date', '')
             print(date)
             volume = request.POST.get('volume', '')
@@ -363,7 +367,7 @@ def raw_purchase(request):
             if center_name and date and volume and price and total_price:
                 # Get the MilkCenter instance
                 try:
-                    milk_center = MilkCenter.objects.get(name=center_name)
+                    milk_center = Employee.objects.get(name=center_name)
 
                 except MilkCenter.DoesNotExist:
                     milk_center = None
@@ -425,7 +429,7 @@ def purchase_milk(request):
     from datetime import date
     today = date.today()
     branch=request.user.branch
-    centers = MilkCenter.objects.filter(branch=branch)
+    centers = Employee.objects.filter(branch=branch,Employee_type='supplier')
     purchase=MilkPurchase.objects.filter(purchase_date=today,branch=branch)
 
     if request.method == 'POST':
@@ -446,7 +450,7 @@ def purchase_milk(request):
             if center_name and date and volume and price and lr and fat and snf and ts and total_price:
                 # Get the MilkCenter instance
                 try:
-                    milk_center = MilkCenter.objects.get(name=center_name)
+                    milk_center = Employee.objects.get(name=center_name)
 
                 except MilkCenter.DoesNotExist:
                     milk_center = None
@@ -532,7 +536,7 @@ def raw_sale(request):
     from datetime import date
     today = date.today()
     branch=request.user.branch
-    customers = Customer.objects.filter(branch=branch)
+    customers = Employee.objects.filter(branch=branch,Employee_type='customer')
     sales=MilkSale.objects.filter(purchase_date=today,branch=branch)
 
 
@@ -553,7 +557,7 @@ def raw_sale(request):
             if customer and date2 and volume and price and total_price:
                 # Get the MilkCenter instance
                 try:
-                    milk_center = Customer.objects.get(name=customer)
+                    milk_center = Employee.objects.get(name=customer)
                 except Customer.DoesNotExist:
                     milk_center = None
 
@@ -603,7 +607,7 @@ def sale_milk (request):
     from datetime import date
     today = date.today()
     branch=request.user.branch
-    customers = Customer.objects.filter(branch=branch)
+    customers = Employee.objects.filter(branch=branch,Employee_type='customer')
     sales=MilkSale.objects.filter(purchase_date=today,branch=branch)
 
 
@@ -624,7 +628,7 @@ def sale_milk (request):
             if customer and date2 and volume and price and lr and fat and snf and ts and total_price:
                 # Get the MilkCenter instance
                 try:
-                    milk_center = Customer.objects.get(name=customer)
+                    milk_center = Employee.objects.get(name=customer)
                 except Customer.DoesNotExist:
                     milk_center = None
 
@@ -731,7 +735,9 @@ def make_payment (request):
     from datetime import date
     today = date.today()
     branch=request.user.branch
-    centers=MilkCenter.objects.filter(branch=branch)
+    from django.db.models import Q
+
+    centers = Employee.objects.filter(Q(branch=branch, Employee_type='supplier') | Q(branch=branch, Employee_type='employee'))
     
     payment_info=MakePayment.objects.filter(branch=branch,payment_date=today)
     # print("akaka",payment_info)
@@ -748,7 +754,7 @@ def make_payment (request):
             if center_name and amount and payment_date and payment_method and notes:
                 # Get the MilkCenter instance
                 try:
-                    milk_center = MilkCenter.objects.get(name=center_name)
+                    milk_center = Employee.objects.get(name=center_name)
                 except MilkCenter.DoesNotExist:
                     milk_center = None
 
@@ -820,7 +826,7 @@ def recive_payment (request):
     from datetime import date
     today = date.today()
     branch=request.user.branch
-    customers=Customer.objects.filter(branch=branch)
+    customers=Employee.objects.filter(branch=branch,Employee_type='customer')
     payment_info=ReceivedPayment.objects.filter(branch=branch,payment_date=today)
 
 
@@ -837,7 +843,7 @@ def recive_payment (request):
             if customer and amount_received and payment_date and payment_method and notes:
                 # Get the MilkCenter instance
                 try:
-                    milk_center = Customer.objects.get(name=customer)
+                    milk_center = Employee.objects.get(name=customer)
                 except Customer.DoesNotExist:
                     milk_center = None
 
@@ -876,8 +882,8 @@ def manager_dashbord (request):
     today = date.today()
     from datetime import datetime
     branch=request.user.branch
-    customers=Customer.objects.filter(branch=branch).count()
-    centers=MilkCenter.objects.filter(branch=branch).count()
+    customers=Employee.objects.filter(branch=branch,Employee_type='customer').count()
+    centers=Employee.objects.filter(branch=branch,Employee_type='supplier').count()
     employee=Employee.objects.filter(branch=branch,Employee_type='employee').count()
     total_volume = MilkPurchase.objects.filter(purchase_date=today,branch=branch).aggregate(Sum('volume'))['volume__sum'] or 0
     total_price = MilkPurchase.objects.filter(purchase_date=today,branch=branch).aggregate(Sum('total_price'))['total_price__sum'] or 0
@@ -921,13 +927,15 @@ def manager_dashbord (request):
 
 def customer_details (request):
     branch=request.user.branch
-    customers=Customer.objects.filter(branch=branch)
+    customers=Employee.objects.filter(branch=branch,Employee_type='customer')
+    
     # Your view logic here
     return render(request, 'manager/customer_details.html',{'customers':customers})
 
 def center_details (request):
     branch=request.user.branch
-    centers=MilkCenter.objects.filter(branch=branch)
+    
+    centers=Employee.objects.filter(branch=branch,Employee_type='supplier')
     # Your view logic here
     return render(request, 'manager/center_details.html',{'centers':centers})
 
@@ -935,36 +943,48 @@ def center_invoice(request,pid):
     selecting_date = request.session.get('Purchase_SD', None)
     ending_date = request.session.get('Purchase_ED', None)
 
-    branch=request.user.branch
-    customer = get_object_or_404(MilkCenter, id=pid)
-    # Use the date range filter if dates are provided, otherwise, retrieve all data
+    if request.method == 'POST':
+        if 'submit2' in request.POST:
+            selecting_date = request.POST.get('from')
+            ending_date = request.POST.get('to')
+            print(selecting_date, ending_date)
+
+    branch = request.user.branch
+    customer = get_object_or_404(Employee, id=pid)
+
     if selecting_date is not None and ending_date is not None:
-        milk_purchases = MilkPurchase.objects.filter(milk_center__id=pid,purchase_date__range=[selecting_date, ending_date])
-        payments = MakePayment.objects.filter(milk_center__id=pid,payment_date__range=[selecting_date, ending_date])
+        milk_purchases = MilkPurchase.objects.filter(milk_center__id=pid, purchase_date__range=[selecting_date, ending_date])
+        payments = MakePayment.objects.filter(milk_center__id=pid, payment_date__range=[selecting_date, ending_date])
+        expences = CustomerExpence.objects.filter(customer__id=pid,date__range=[selecting_date, ending_date])
+        
     else:
         milk_purchases = MilkPurchase.objects.filter(milk_center__id=pid)
         payments = MakePayment.objects.filter(milk_center__id=pid)
-    
-    
-    
+        expences = CustomerExpence.objects.filter(customer__id=pid)
+
     milk_purchases = milk_purchases.annotate(source=models.Value('MilkPurchase', output_field=models.CharField()))
     payments = payments.annotate(source=models.Value('MakePayment', output_field=models.CharField()))
-    combined_data = list(milk_purchases) + list(payments)
-    combined_data.sort(key=lambda x: x.purchase_date if x.source == 'MilkPurchase' else x.payment_date)
+    expences = expences.annotate(source=models.Value('Expences', output_field=models.CharField()))
+    combined_data = list(milk_purchases) + list(payments)+ list(expences)
+    # combined_data.sort(key=lambda x: x.purchase_date if x.source == 'MilkPurchase' else x.payment_date)
 
-    # Calculate the balance
-    balance = 0
+    opening_balance = customer.opening_balance  # Get the opening balance from the employee model
+
+    balance = opening_balance  # Initialize balance with the opening balance
+
     for entry in combined_data:
         if entry.source == 'MilkPurchase':
             balance += entry.total_price
+        elif entry.source == 'Expences':
+            balance -= entry.expense_amount
         else:
             balance -= entry.amount
 
-        # Add a 'balance' attribute to each entry
         entry.balance = balance
 
     context = {
         'pid':pid,
+        'opening_balance':opening_balance,
         'combined_data': combined_data,
         'customer': customer,
            "selecting_date":selecting_date, 
@@ -992,55 +1012,61 @@ def center_invoice(request,pid):
     return response
 
 
-
 def view_center(request, pid):
-    selecting_date=None
-    ending_date=None
+    selecting_date = None
+    ending_date = None
 
     if request.method == 'POST':
         if 'submit2' in request.POST:
             selecting_date = request.POST.get('from')
             ending_date = request.POST.get('to')
-            print(selecting_date,ending_date)
+            print(selecting_date, ending_date)
 
+    branch = request.user.branch
+    customer = get_object_or_404(Employee, id=pid)
 
-    branch=request.user.branch
-    customer = get_object_or_404(MilkCenter, id=pid)
-    # Use the date range filter if dates are provided, otherwise, retrieve all data
     if selecting_date is not None and ending_date is not None:
-        milk_purchases = MilkPurchase.objects.filter(milk_center__id=pid,purchase_date__range=[selecting_date, ending_date])
-        payments = MakePayment.objects.filter(milk_center__id=pid,payment_date__range=[selecting_date, ending_date])
+        milk_purchases = MilkPurchase.objects.filter(milk_center__id=pid, purchase_date__range=[selecting_date, ending_date])
+        payments = MakePayment.objects.filter(milk_center__id=pid, payment_date__range=[selecting_date, ending_date])
+        expences = CustomerExpence.objects.filter(customer__id=pid,date__range=[selecting_date, ending_date])
+        
     else:
         milk_purchases = MilkPurchase.objects.filter(milk_center__id=pid)
         payments = MakePayment.objects.filter(milk_center__id=pid)
-    
-    
-    
+        expences = CustomerExpence.objects.filter(customer__id=pid)
+
     milk_purchases = milk_purchases.annotate(source=models.Value('MilkPurchase', output_field=models.CharField()))
     payments = payments.annotate(source=models.Value('MakePayment', output_field=models.CharField()))
-    combined_data = list(milk_purchases) + list(payments)
-    combined_data.sort(key=lambda x: x.purchase_date if x.source == 'MilkPurchase' else x.payment_date)
+    expences = expences.annotate(source=models.Value('Expences', output_field=models.CharField()))
+    combined_data = list(milk_purchases) + list(payments)+ list(expences)
+    # combined_data.sort(key=lambda x: x.purchase_date if x.source == 'MilkPurchase' else x.payment_date)
 
-    # Calculate the balance
-    balance = 0
+    opening_balance = customer.opening_balance  # Get the opening balance from the employee model
+
+    balance = opening_balance  # Initialize balance with the opening balance
+
     for entry in combined_data:
         if entry.source == 'MilkPurchase':
             balance += entry.total_price
+        elif entry.source == 'Expences':
+            balance -= entry.expense_amount
         else:
             balance -= entry.amount
 
-        # Add a 'balance' attribute to each entry
         entry.balance = balance
 
     context = {
-        'pid':pid,
+        'pid': pid,
         'combined_data': combined_data,
-        'customer': customer,  # Pass the customer object to the template
+        'customer': customer,
+        'opening_balance': opening_balance,
     }
+
     request.session['Purchase_SD'] = selecting_date
     request.session['Purchase_ED'] = ending_date
-        # return center_invoice(request, pid, combined_data,customer)
+
     return render(request, 'manager/view_center.html', context)
+
 
 def customer_invoice(request,pid):
     starting_date = request.session.get('Sale_SD', None)
@@ -1052,7 +1078,7 @@ def customer_invoice(request,pid):
             ending_date = request.POST.get('to')
             print(starting_date,ending_date)
     
-    customer = get_object_or_404(Customer, id=pid)
+    customer = get_object_or_404(Employee, id=pid)
     # Use the date range filter if dates are provided, otherwise, retrieve all data
     if starting_date is not None and ending_date is not None:
         milk_sale = MilkSale.objects.filter(customer__id=pid,purchase_date__range=[starting_date, ending_date])
@@ -1081,8 +1107,9 @@ def customer_invoice(request,pid):
 # Sort the combined_data list based on the date using the get_record_date function
     combined_data.sort(key=get_record_date)
 
-    # Calculate the balance
-    balance = 0
+    opening_balance = customer.opening_balance  # Get the opening balance from the employee model
+
+    balance = opening_balance  # Initialize balance with the opening balance
     for entry in combined_data:
         if entry.source == 'MilkPurchase':
             balance += entry.total_price
@@ -1096,6 +1123,7 @@ def customer_invoice(request,pid):
 
     context = {
         'pid':pid,
+        'opening_balance':opening_balance,
         'combined_data': combined_data,
         'customer': customer,  # Pass the customer object to the template
         "selecting_date":starting_date, 
@@ -1125,6 +1153,7 @@ def customer_invoice(request,pid):
 
 
 def view_customer(request, pid):
+
     starting_date=None
     ending_date=None
 
@@ -1134,7 +1163,7 @@ def view_customer(request, pid):
             ending_date = request.POST.get('to')
             print(starting_date,ending_date)
     
-    customer = get_object_or_404(Customer, id=pid)
+    customer = get_object_or_404(Employee, id=pid)
     # Use the date range filter if dates are provided, otherwise, retrieve all data
     if starting_date is not None and ending_date is not None:
         milk_sale = MilkSale.objects.filter(customer__id=pid,purchase_date__range=[starting_date, ending_date])
@@ -1163,13 +1192,14 @@ def view_customer(request, pid):
 # Sort the combined_data list based on the date using the get_record_date function
     combined_data.sort(key=get_record_date)
 
-    # Calculate the balance
-    balance = 0
+    opening_balance = customer.opening_balance  # Get the opening balance from the employee model
+
+    balance = opening_balance  # Initialize balance with the opening balance
     for entry in combined_data:
         if entry.source == 'MilkPurchase':
             balance += entry.total_price
         elif entry.source=='Expences':
-            balance+=entry.expense_amount
+            balance+=entry.expence_amount
         else:
             balance -= entry.amount_received
 
@@ -1178,13 +1208,15 @@ def view_customer(request, pid):
 
     context = {
         'pid':pid,
+        'opening_balance':opening_balance,
         'combined_data': combined_data,
         'customer': customer,  # Pass the customer object to the template
+        
     }
     request.session['Sale_SD'] = starting_date
     request.session['Sale_ED'] = ending_date
 
-    return render(request, 'manager/view_customer.html', context)
+    return render(request, 'manager/view_customers.html', context)
 
 
 def register_customer_ex (request):
@@ -1202,7 +1234,8 @@ def register_customer_ex (request):
 def add_customer_ex (request):
     branch=request.user.branch
     expences=Expence.objects.filter(branch=branch)
-    customers=Customer.objects.filter(branch=branch)
+    customers=Employee.objects.filter(branch=branch,Employee_type='customer')
+   
     print(customers)
 
     if request.method=='POST':
@@ -1224,6 +1257,30 @@ def add_customer_ex (request):
     return render(request, 'manager/add_customer_ex.html',context)
 
 
+def add_center_ex(request):
+    branch=request.user.branch
+    expences=Expence.objects.filter(branch=branch)
+    customers=Employee.objects.filter(branch=branch,Employee_type='supplier')
+   
+    print(customers)
+
+    if request.method=='POST':
+        date=request.POST.get('date', '')
+        customer_name=request.POST.get('customer_name', '')
+        expence_type=request.POST.get('expence_type', '')
+        expence_amount=request.POST.get('expence_amount', '')
+
+
+        name = Employee.objects.get(name=customer_name,Employee_type='supplier')
+        CustomerExpence(customer=name,date=date,expense_type=expence_type,expense_amount=expence_amount,branch=branch).save()
+        print("expence saved")
+
+    context={
+        'expences':expences,
+        'customers':customers
+    }
+    # Your view logic here
+    return render(request, 'manager/add_customer_ex.html',context)
 
 
 from decimal import Decimal  # Import Decimal
